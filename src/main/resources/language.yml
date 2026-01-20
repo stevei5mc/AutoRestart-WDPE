@@ -1,0 +1,41 @@
+language_version: 1
+
+broadcast-restart-reminder-time: "§a距离服务器执行重启剩余 §e%1%"
+
+command-tip-autoRestart: AutoRestart 插件重启管理命令
+
+command-help_reload: §e重载配置
+command-help-restartTask-cancel: §e取消重启任务
+command-help-restartTask-run: §e运行重启任务
+command-help-restartTask-pause: 暂停/继续运行任务
+
+command-message-notPermission: §c你没有权限使用此命令！
+command-message-inGameRun: §c请在游戏内使用此命令！
+command-message-unknown: §c未知的命令或参数，请检查后再试！
+
+input-parameter-error: "§c输入的参数有误，请重新尝试！"
+
+kickPlayer-message: §e服务器重启中 稍后再会
+
+reload-success: §a已重载配置！
+
+restart-message-title: §c即将重启
+restart-message-subtitle: §e本分支服将在 §6%1% §e%2%后重启
+restart-message-tip: §e本分支服将在 §6%1% §e%2%后重启
+restart-message-taskPause: §a重启任务已暂停
+restart-message-taskContinue: §a重启任务已继续运行
+
+restart-taskState-cancel: §a重启任务已取消
+restart-taskState-restart: §f服务器将于 §a%1%§f %2%后重启
+restart-taskState-run: §a重启任务开始运行。类型： %1%
+
+restart-taskType-auto: 自动重启
+restart-taskType-Time: 定时重启
+restart-taskType-noPlayer: 无在线玩家时重启
+restart-taskType-manual: 手动重启
+
+time-unit: 时间单位
+time-unit-type: "（ 时间单位: %1% ）"
+time-unit-hour: 小时
+time-unit-minutes: 分钟
+time-unit-seconds: 秒

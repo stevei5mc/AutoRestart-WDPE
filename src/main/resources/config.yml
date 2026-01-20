@@ -1,0 +1,45 @@
+# 配置文件版本（勿动!!!）
+version: 1
+# 重启时间(单位：分钟)
+restart_time: 180
+# 重启前提示时间(单位：秒)
+restart_tip_time: 30
+#  是否在重启前把玩家踢出
+kick_player: true
+# 一些显示的设置
+show:
+  # 显示 title 和 subtitle
+  title: true
+  # 底部显示(在物品栏上方)
+  tip: true
+# 音效
+sound:
+  # 在重启前播放音效来提醒服务器即将重启
+  restart:
+    enable: true
+    name: "random.toast"
+    volume: 1.0
+    pitch: 0.5
+# 重启前执行的命令
+runcommand: true
+commands:
+  global:
+    # 全局性的命令，需要在关服前执行的命令（注意，如果需要为每一名玩家都执行命令的请在 player 的命令配置中填写）
+    - "list"
+    - "status"
+  player:
+    # 为每一名玩家执行的命令
+    # &con为控制台执行 @p代表玩家名 ( 只有为每一名玩家都执行的命令 @p 与 &con 才会生效 )
+    - "help"
+    - "say hello @p&con"
+# 调试模式
+debug: false
+# 消息前缀
+message_prefix: "§l§bAutoRestart §r§7>> "
+broadcast_message:
+  # 定时提醒服务器执行的剩余时间
+  reminder_time:
+    ## 是否启用
+    enable: true
+    ## 广播周期 （单位：分钟）
+    broadcast_restart_reminder_cycle: 30

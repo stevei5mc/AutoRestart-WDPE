@@ -1,0 +1,4 @@
+name: "AutoRestart-WDPE"
+author: "stevei5mc"
+version: "${version}"
+main: "cn.stevei5mc.wdpe.autorestart.AutoRestartMain"
