@@ -1,10 +1,10 @@
 language_version: 1
 
-broadcast-restart-reminder-time: "§a距离服务器执行重启剩余 §e%1%"
+broadcast-restart-reminderTime: "§a距离服务器执行重启剩余 §e%1%"
 
 command-tip-autoRestart: AutoRestart 插件重启管理命令
 
-command-help_reload: §e重载配置
+command-help-reload: §e重载配置
 command-help-restartTask-cancel: §e取消重启任务
 command-help-restartTask-run: §e运行重启任务
 command-help-restartTask-pause: 暂停/继续运行任务

@@ -5,14 +5,16 @@ import cn.stevei5mc.wdpe.autorestart.utils.TaskUtils;
 import dev.waterdog.waterdogpe.command.Command;
 import dev.waterdog.waterdogpe.command.CommandSender;
 import dev.waterdog.waterdogpe.command.CommandSettings;
-import org.cloudburstmc.protocol.bedrock.data.command.CommandOverloadData;
+import org.cloudburstmc.protocol.bedrock.data.command.*;
+
+import java.util.*;
 
 public class MainCmd extends Command {
     private final AutoRestartMain main = AutoRestartMain.getInstance();
 
     public MainCmd() {
-        super("autorestart-wdpe", CommandSettings.builder().setDescription("AutoRestart 插件主命令").setPermission("autorestart.admin").
-                setUsageMessage("autorestart-wdpe help").setPermissionMessage("§c你没有权限使用该命令！").build());
+        super("autorestart-wdpe", CommandSettings.builder().setDescription(AutoRestartMain.getInstance().getLanguage().getString("command-tip-autoRestart"))
+                .setPermission("autorestart.admin").setPermissionMessage(AutoRestartMain.getInstance().getLanguage().getString("command-message-notPermission")).build());
     }
 
 
@@ -30,7 +32,12 @@ public class MainCmd extends Command {
                 case "reload" -> {
                     if (checkPermission(sender, "autorestart.admin.reload")) {
                         main.loadConfig();
-                        sender.sendMessage("配置文件已重载！");
+                        sender.sendMessage(main.getLanguage().getString("reload-success"));
+                    }
+                }
+                case "pause" -> {
+                    if (checkPermission(sender, "autorestart.admin.pause")) {
+                        TaskUtils.pauseOrContinueRestartTask();
                     }
                 }
                 default -> sendHelp(sender);
@@ -43,26 +50,39 @@ public class MainCmd extends Command {
 
     @Override
     protected CommandOverloadData[] buildCommandOverloads() {
-        return super.buildCommandOverloads();
-    }
+        List<CommandOverloadData> overloadData = new ArrayList<>();
+        String[] subCommands = {"cancel", "pause", "reload"};
+        for (String subCmd: subCommands) {
+            Map<String, Set<CommandEnumConstraint>> map = new LinkedHashMap<>();
+            map.put(subCmd.toLowerCase(), EnumSet.of(CommandEnumConstraint.ALLOW_ALIASES));
 
-    @Override
-    public String getName() {
-        return super.getName();
+            CommandParamData baseParam = new CommandParamData();
+            baseParam.setName(subCmd.toLowerCase());
+            baseParam.setOptional(false);
+            baseParam.setType(CommandParam.TEXT);
+            baseParam.setEnumData(new CommandEnumData(subCmd.toLowerCase(), map, false));
+
+            LinkedList<CommandParamData> paramData = new LinkedList<>();
+            paramData.add(baseParam);
+
+            overloadData.add(new CommandOverloadData(false, paramData.toArray(new CommandParamData[0])));
+        }
+        return overloadData.toArray(new CommandOverloadData[0]);
     }
 
     public void sendHelp(CommandSender sender) {
         sender.sendMessage("§3===== AutoRestart for WDPE =====");
-        sender.sendMessage("§a/autorestart-wdpe cancel §e取消重启任务");
-        sender.sendMessage("§a/autorestart-wdpe restart §e运行重启任务");
-        sender.sendMessage("§a/autorestart-wdpe reload §e重载配置文件");
+        sender.sendMessage("§a/autorestart-wdpe cancel " + main.getLanguage().getString("command-help-restartTask-cancel"));
+        sender.sendMessage("§a/autorestart-wdpe restart " + main.getLanguage().getString("command-help-restartTask-run"));
+        sender.sendMessage("§a/autorestart-wdpe reload " + main.getLanguage().getString("command-help-reload"));
+        sender.sendMessage("§a/autorestart-wdpe pause " + main.getLanguage().getString("command-help-restartTask-pause"));
     }
 
     public boolean checkPermission(CommandSender sender, String permission) {
         if (sender.hasPermission(permission)) {
             return true;
         }
-        sender.sendMessage("§c你没有权限使用该命令！");
+        sender.sendMessage(main.getLanguage().getString("command-message-notPermission"));
         return false;
     }
 
