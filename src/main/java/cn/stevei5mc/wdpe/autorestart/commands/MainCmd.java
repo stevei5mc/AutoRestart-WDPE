@@ -1,13 +1,16 @@
 package cn.stevei5mc.wdpe.autorestart.commands;
 
 import cn.stevei5mc.wdpe.autorestart.AutoRestartMain;
+ import cn.stevei5mc.wdpe.autorestart.utils.BaseUtils;
 import cn.stevei5mc.wdpe.autorestart.utils.TaskUtils;
+import cn.stevei5mc.wdpe.autorestart.utils.restart.RestartTaskType;
 import dev.waterdog.waterdogpe.command.Command;
 import dev.waterdog.waterdogpe.command.CommandSender;
 import dev.waterdog.waterdogpe.command.CommandSettings;
 import org.cloudburstmc.protocol.bedrock.data.command.*;
 
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 public class MainCmd extends Command {
     private final AutoRestartMain main = AutoRestartMain.getInstance();
@@ -28,7 +31,11 @@ public class MainCmd extends Command {
                         TaskUtils.cancelRestartTask();
                     }
                 }
-                case "restart" -> runRestartTask();
+                case "restart" -> {
+                    if (checkPermission(sender, "autorestart.admin.restart")) {
+                        runRestartTask(sender, strings);
+                    }
+                }
                 case "reload" -> {
                     if (checkPermission(sender, "autorestart.admin.reload")) {
                         main.loadConfig();
@@ -67,6 +74,26 @@ public class MainCmd extends Command {
 
             overloadData.add(new CommandOverloadData(false, paramData.toArray(new CommandParamData[0])));
         }
+
+        Map<String, Set<CommandEnumConstraint>> restartMap = new LinkedHashMap<>();
+        restartMap.put("restart", EnumSet.of(CommandEnumConstraint.ALLOW_ALIASES));
+        CommandParamData restart = new CommandParamData();
+        restart.setName("restart");
+        restart.setOptional(false);
+        restart.setType(CommandParam.TEXT);
+        restart.setEnumData(new CommandEnumData("restart", restartMap, false));
+
+        Map<String, Set<CommandEnumConstraint>> restartParamMap = new LinkedHashMap<>();
+        restartParamMap.put("no-player", EnumSet.of(CommandEnumConstraint.ALLOW_ALIASES));
+        restartParamMap.put("manual", EnumSet.of(CommandEnumConstraint.ALLOW_ALIASES));
+        CommandParamData restartParam = new CommandParamData();
+        restartParam.setName("restart type");
+        restartParam.setOptional(false);
+        restartParam.setType(CommandParam.TEXT);
+        restartParam.setEnumData(new CommandEnumData("restart type", restartParamMap, false));
+
+        overloadData.add(new CommandOverloadData(false, new CommandParamData[]{restart, restartParam}));
+
         return overloadData.toArray(new CommandOverloadData[0]);
     }
 
@@ -86,7 +113,17 @@ public class MainCmd extends Command {
         return false;
     }
 
-    private void runRestartTask(){
-
+    private void runRestartTask(CommandSender sender, String[] params){
+        switch (params[1]) {
+            case "no-player" -> {
+                TaskUtils.cancelRestartTask();
+                TaskUtils.runRestartTask(RestartTaskType.NO_PLAYER);
+            }
+            case "manual" -> {
+                TaskUtils.cancelRestartTask();
+                TaskUtils.runRestartTask(RestartTaskType.MANUAL, BaseUtils.getRestartTipTime(), TimeUnit.SECONDS);
+            }
+            default -> sendHelp(sender);
+        }
     }
 }

@@ -30,7 +30,7 @@ public class AutoRestartMain extends Plugin {
 
     @Override
     public void onDisable() {
-
+        this.getLogger().info("已停止运行，感谢你的使用");
     }
 
     public void saveConfig() {

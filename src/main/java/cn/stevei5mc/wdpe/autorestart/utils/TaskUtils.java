@@ -22,7 +22,15 @@ public class TaskUtils {
 
 
     /**
-     * 允许重启任务
+     * 运行重启任务
+     * @param type 任务类型
+     */
+    public static void runRestartTask(RestartTaskType type) {
+        runRestartTask(type, 30, TimeUnit.SECONDS);
+    }
+
+    /**
+     * 运行重启任务
      * @param type 任务类型
      * @param time 定时时间
      * @param timeUnit 时间单位

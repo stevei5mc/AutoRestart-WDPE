@@ -13,8 +13,14 @@ public enum RestartTaskType {
     NO_RESTART_TASK("restart-task-type-noRestartTask", 0),
     /**
      * 类型：自动重启
+     * <br>
+     * 注：该类型仅在插件启动时使用一次，之后不能再此使用！
      */
     AUTO("restart-task-type-auto", 20),
+    /**
+     * 类型：手动重启
+     */
+    MANUAL("restart-taskType-manual", 20),
     /**
      * 类型：无人时重启
      */
