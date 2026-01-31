@@ -1,6 +1,8 @@
 package cn.stevei5mc.wdpe.autorestart;
 
 import cn.stevei5mc.wdpe.autorestart.commands.MainCmd;
+import cn.stevei5mc.wdpe.autorestart.utils.BaseUtils;
+import cn.stevei5mc.wdpe.autorestart.utils.TimeUtils;
 import cn.stevei5mc.wdpe.autorestart.utils.restart.RestartTaskType;
 import cn.stevei5mc.wdpe.autorestart.utils.TaskUtils;
 import dev.waterdog.waterdogpe.plugin.Plugin;
@@ -25,7 +27,11 @@ public class AutoRestartMain extends Plugin {
         instance = this;
         saveConfig();
         this.getProxy().getCommandMap().registerCommand(new MainCmd());
-        TaskUtils.runRestartTask(RestartTaskType.AUTO, config.getInt("restart_time", 180), TimeUnit.MINUTES);
+        if (config.getBoolean("restart_time.time_mode", true)) {
+            TaskUtils.runRestartTask(RestartTaskType.AUTO_CRON, TimeUtils.getRestartCronTime());
+        }else {
+            TaskUtils.runRestartTask(RestartTaskType.AUTO_CYCLE, BaseUtils.getRestartUseTime(), TimeUnit.MINUTES);
+        }
     }
 
     @Override
@@ -43,5 +49,9 @@ public class AutoRestartMain extends Plugin {
     public void loadConfig() {
         config = new YamlConfig(this.getDataFolder() + "/config.yml");
         language = new YamlConfig(this.getDataFolder() + "/language.yml");
+    }
+
+    public String getMessagePrefix() {
+        return config.getString("message_prefix", "§l§bAutoRestart §r§7>> ");
     }
 }

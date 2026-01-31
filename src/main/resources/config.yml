@@ -1,10 +1,20 @@
 # 配置文件版本（勿动!!!）
 version: 1
-# 重启时间(单位：分钟)
-restart_time: 180
+# 重启时间
+restart_time:
+  # 时间模式
+  # true 使用 cron_time 配置的时间
+  # false 使用 cycle_time 配置的时间
+  time_mode: true
+  # 周期模式 （单位：分钟）
+  cycle_time: 720
+  # 定时模式
+  # 格式：时&分 或 时&分&星期 星期范围（1-7）
+  cron_time:
+    - "3&30"
 # 重启前提示时间(单位：秒)
 restart_tip_time: 30
-#  是否在重启前把玩家踢出
+# 是否在重启前把玩家踢出
 kick_player: true
 # 一些显示的设置
 show:
@@ -13,17 +23,16 @@ show:
   # 底部显示(在物品栏上方)
   tip: true
 # 重启前执行的命令
-runcommand: true
+runCommand: true
 commands:
   global:
     # 全局性的命令，需要在关服前执行的命令（注意，如果需要为每一名玩家都执行命令的请在 player 的命令配置中填写）
-    - "list"
-    - "status"
+    - "wdlist"
   player:
     # 为每一名玩家执行的命令
     # &con为控制台执行 @p代表玩家名 ( 只有为每一名玩家都执行的命令 @p 与 &con 才会生效 )
-    - "help"
-    - "say hello @p&con"
+    - "wdhelp"
+    - "wdinfo&con"
 # 调试模式
 debug: false
 # 消息前缀

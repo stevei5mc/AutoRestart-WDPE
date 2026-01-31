@@ -26,7 +26,8 @@ restart-message-taskPause: §a重启任务已暂停
 restart-message-taskContinue: §a重启任务已继续运行
 
 restart-taskState-cancel: §a重启任务已取消
-restart-taskState-restart: §f服务器将于 §a%1%§f %2%后重启
+restart-taskState-restartCycle: §f服务器将于 §a%1%§f %2%后重启
+restart-taskState-restartCron: §f服务器将定时于 §a%1%§f 进行重启
 restart-taskState-run: §a重启任务开始运行。类型： %1%
 
 restart-taskType-auto: 自动重启

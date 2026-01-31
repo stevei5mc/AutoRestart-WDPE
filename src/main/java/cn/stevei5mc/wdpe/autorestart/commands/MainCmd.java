@@ -39,7 +39,7 @@ public class MainCmd extends Command {
                 case "reload" -> {
                     if (checkPermission(sender, "autorestart.admin.reload")) {
                         main.loadConfig();
-                        sender.sendMessage(main.getLanguage().getString("reload-success"));
+                        sender.sendMessage(main.getMessagePrefix() + main.getLanguage().getString("reload-success"));
                     }
                 }
                 case "pause" -> {
@@ -109,7 +109,7 @@ public class MainCmd extends Command {
         if (sender.hasPermission(permission)) {
             return true;
         }
-        sender.sendMessage(main.getLanguage().getString("command-message-notPermission"));
+        sender.sendMessage(main.getMessagePrefix() + main.getLanguage().getString("command-message-notPermission"));
         return false;
     }
 

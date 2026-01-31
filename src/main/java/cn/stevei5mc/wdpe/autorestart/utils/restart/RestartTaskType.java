@@ -8,15 +8,22 @@ import lombok.Getter;
 public enum RestartTaskType {
 
     /**
-     * 重启任务的默认类型，如果没有运行重启任务就为该类型
+     * 重启任务的默认类型，如果没有运行重启任务就为该类型<br>
+     * 如果在运行重启任务时填写该类型，重启任务并不会正常的运行！！！
      */
     NO_RESTART_TASK("restart-task-type-noRestartTask", 0),
     /**
-     * 类型：自动重启
+     * 类型：自动重启 （倒计时模式）
      * <br>
      * 注：该类型仅在插件启动时使用一次，之后不能再此使用！
      */
-    AUTO("restart-task-type-auto", 20),
+    AUTO_CYCLE("restart-task-type-auto", 20),
+    /**
+     * 类型：自动重启 （定时模式）
+     * <br>
+     * 注：该类型仅在插件启动时使用一次，之后不能再此使用！
+     */
+    AUTO_CRON("restart-task-type-auto", 20),
     /**
      * 类型：手动重启
      */

@@ -3,11 +3,13 @@ package cn.stevei5mc.wdpe.autorestart.tasks;
 import cn.stevei5mc.wdpe.autorestart.AutoRestartMain;
 import cn.stevei5mc.wdpe.autorestart.utils.BaseUtils;
 import cn.stevei5mc.wdpe.autorestart.utils.TaskUtils;
+import cn.stevei5mc.wdpe.autorestart.utils.TimeUtils;
 import cn.stevei5mc.wdpe.autorestart.utils.restart.RestartTaskType;
 import dev.waterdog.waterdogpe.player.ProxiedPlayer;
 import dev.waterdog.waterdogpe.scheduler.Task;
 import dev.waterdog.waterdogpe.utils.types.TextContainer;
 
+import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
 
 public class RestartTask extends Task {
@@ -25,10 +27,9 @@ public class RestartTask extends Task {
     @Override
     public void onRun(int i) {
         if (TaskUtils.getRestartTaskType() != RestartTaskType.NO_RESTART_TASK ) {
-            main.getLogger().info("time=" + restartReminderTime);
             if (!TaskUtils.getRestartTaskType().equals(RestartTaskType.NO_PLAYER)) {
                 if (main.getConfig().getBoolean("broadcast_message.reminder_time.enable", true) && restartReminderTime == broadcastCycle && broadcastCycle > 0) {
-                    broadcastCycle = broadcastCycle - BaseUtils.convertTime(main.getConfig().getInt("broadcast_message.reminder_time.cycle", 30), TimeUnit.MINUTES);
+                    broadcastCycle = broadcastCycle - TimeUtils.convertTime(main.getConfig().getInt("broadcast_message.reminder_time.cycle", 30), TimeUnit.MINUTES);
                     for (ProxiedPlayer player: main.getProxy().getPlayers().values()) {
                         player.sendMessage(main.getLanguage().getString("broadcast-restart-reminderTime").replace("%1%", getRestartTime()));
                     }
@@ -45,6 +46,7 @@ public class RestartTask extends Task {
                     }
                 }
                 if (restartReminderTime <= 0) {
+                    runCommand();
                     if (main.getProxy().getPlayers().size() >= 1 && main.getConfig().getBoolean("kick_player", true)) {
                         for (ProxiedPlayer player: main.getProxy().getPlayers().values()) {
                             player.disconnect(new TextContainer(main.getLanguage().getString("kickPlayer-message")));
@@ -96,5 +98,28 @@ public class RestartTask extends Task {
         }
         timeTxt.append(seconds).append(main.getLanguage().getString("time-unit-seconds"));
         return timeTxt;
+    }
+
+    private void runCommand() {
+        if (main.getConfig().getBoolean("runCommand", true)) {
+            ArrayList<String> globalCommands = new ArrayList<>(main.getConfig().getStringList("commands.global", new ArrayList<>()));
+            for (String cmd: globalCommands) {
+                String[] s = cmd.split("&");
+                main.getProxy().dispatchCommand(main.getProxy().getConsoleSender(), s[0]);
+            }
+            if(main.getProxy().getPlayers().size() >= 1) {
+                ArrayList<String> playerCommands = new ArrayList<>(main.getConfig().getStringList("commands.player", new ArrayList<>()));
+                for (ProxiedPlayer player: main.getProxy().getPlayers().values()) {
+                    for (String cmd: playerCommands) {
+                        String[] s = cmd.split("&");
+                        if (s.length > 1 && s[1].equals("con")) {
+                            main.getProxy().dispatchCommand(main.getProxy().getConsoleSender(), s[0]);
+                        }else {
+                            main.getProxy().dispatchCommand(player, s[0].replace("@p", player.getName()));
+                        }
+                    }
+                }
+            }
+        }
     }
 }
