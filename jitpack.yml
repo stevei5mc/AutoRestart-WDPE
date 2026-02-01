@@ -1,0 +1,10 @@
+jdk:
+  - openjdk17
+
+before_install:
+  - echo "Build version $VERSION"
+  - mvn versions:set -DnewVersion=$VERSION
+
+install:
+  - mvn clean install -DskipTests
+  - ls -lah ./target
