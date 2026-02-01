@@ -54,4 +54,10 @@ public class AutoRestartMain extends Plugin {
     public String getMessagePrefix() {
         return config.getString("message_prefix", "§l§bAutoRestart §r§7>> ");
     }
+
+    public void sendDebugLog(String message) {
+        if (config.getBoolean("debug", false)) {
+            this.getLogger().debug(message);
+        }
+    }
 }

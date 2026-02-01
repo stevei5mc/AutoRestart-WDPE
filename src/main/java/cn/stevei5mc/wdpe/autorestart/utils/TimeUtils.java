@@ -89,8 +89,8 @@ public class TimeUtils {
                 restartTime = nextTime;
             }
 
-            main.getLogger().debug("time=" + diff);
-            main.getLogger().debug("t2=" + nextTime);
+            main.sendDebugLog("Time diff=" + diff);
+            main.sendDebugLog("Target time=" + nextTime);
         }
         return restartTime;
     }
