@@ -35,15 +35,20 @@ public class TaskUtils {
     }
 
     /**
-     * 运行重启任务
+     * 运行重启任务<br>
+     * 注：该方法仅供 AUTO_CRON 的任务类型使用！！！
      * @param taskType 任务类型
      * @param restartTime 目标重启时间
      */
     public static void runRestartTask(RestartTaskType taskType, ZonedDateTime restartTime) {
-        ZonedDateTime currentTime = ZonedDateTime.now();
-        long time = ChronoUnit.SECONDS.between(currentTime, restartTime);
-        targetRestartTime = restartTime;
-        runRestartTask(taskType, (int) time, TimeUnit.SECONDS);
+        if (taskType.equals(RestartTaskType.AUTO_CRON)) {
+            ZonedDateTime currentTime = ZonedDateTime.now();
+            long time = ChronoUnit.SECONDS.between(currentTime, restartTime);
+            targetRestartTime = restartTime;
+            runRestartTask(taskType, (int) time, TimeUnit.SECONDS);
+        }else {
+            main.getLogger().error("§c该方法仅供 AUTO_CRON 的任务类型使用！", new IllegalArgumentException());
+        }
     }
     /**
      * 运行重启任务

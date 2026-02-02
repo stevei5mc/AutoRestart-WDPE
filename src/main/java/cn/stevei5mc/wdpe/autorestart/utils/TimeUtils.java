@@ -61,6 +61,8 @@ public class TimeUtils {
         ZonedDateTime restartTime = null;
         long minDiff = Long.MAX_VALUE;
 
+        main.sendDebugLog("current time=" + now);
+
         // 寻找最近的时间点
         for (String[] timeKey: timeList) {
             ZonedDateTime nextTime;
