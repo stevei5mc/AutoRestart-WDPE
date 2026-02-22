@@ -27,6 +27,20 @@ public class TimeUtils {
     }
 
     /**
+     * 将时间转换成秒
+     * @param time 需要转换的时间
+     * @param unit 原始时间单位（ 时 = HOURS 、分 = MINUTES 、秒 = SECONDS ）
+     * @return 转换后的时间（单位：秒）
+     */
+    public static long convertTime(long time, TimeUnit unit) {
+        return switch (unit) {
+            case HOURS -> time * 3600;
+            case MINUTES -> time * 60;
+            default -> time;
+        };
+    }
+
+    /**
      * 获取最近的重启时间段
      * @return 目标重启时段
      */
@@ -61,7 +75,7 @@ public class TimeUtils {
         ZonedDateTime restartTime = null;
         long minDiff = Long.MAX_VALUE;
 
-        main.sendDebugLog("current time=" + now);
+        main.sendDebugLog("Current time=" + now);
 
         // 寻找最近的时间点
         for (String[] timeKey: timeList) {

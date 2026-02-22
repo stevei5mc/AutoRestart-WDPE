@@ -15,10 +15,10 @@ import java.util.concurrent.TimeUnit;
 public class RestartTask extends Task {
 
     private static final AutoRestartMain main = AutoRestartMain.getInstance();
-    private static int restartReminderTime;
-    private int broadcastCycle;
+    private static long restartReminderTime;
+    private long broadcastCycle;
 
-    public RestartTask(int time) {
+    public RestartTask(long time) {
         super();
         restartReminderTime = time;
         this.broadcastCycle = time;
@@ -26,40 +26,41 @@ public class RestartTask extends Task {
 
     @Override
     public void onRun(int i) {
-        if (TaskUtils.getRestartTaskType() != RestartTaskType.NO_RESTART_TASK ) {
-            if (!TaskUtils.getRestartTaskType().equals(RestartTaskType.NO_PLAYER)) {
-                if (main.getConfig().getBoolean("broadcast_message.reminder_time.enable", true) && restartReminderTime == broadcastCycle && broadcastCycle > 0) {
-                    broadcastCycle = broadcastCycle - TimeUtils.convertTime(main.getConfig().getInt("broadcast_message.reminder_time.cycle", 30), TimeUnit.MINUTES);
+        if (TaskUtils.getRestartTaskType().equals(RestartTaskType.NO_RESTART_TASK)) {
+            TaskUtils.cancelRestartTask();
+            return;
+        }
+
+        if (!TaskUtils.getRestartTaskType().equals(RestartTaskType.NO_PLAYER)) {
+            if (main.getConfig().getBoolean("broadcast_message.reminder_time.enable", true) && restartReminderTime == broadcastCycle && broadcastCycle > 0) {
+                broadcastCycle = broadcastCycle - TimeUtils.convertTime(main.getConfig().getInt("broadcast_message.reminder_time.cycle", 30), TimeUnit.MINUTES);
+                for (ProxiedPlayer player: main.getProxy().getPlayers().values()) {
+                    player.sendMessage(main.getLanguage().getString("broadcast-restart-reminderTime").replace("%1%", getRestartTime()));
+                }
+            }
+            if (main.getProxy().getPlayers().size() >= 1 && restartReminderTime <= BaseUtils.getRestartTipTime()) {
+                for (ProxiedPlayer player: main.getProxy().getPlayers().values()) {
+                    if (main.getConfig().getBoolean("show.title", true)) {
+                        player.sendTitle(replaceTimeValue(main.getLanguage().getString("restart-message-title")), replaceTimeValue(main.getLanguage().getString("restart-message-subtitle")),
+                                0, 60, 30);
+                    }
+                    if (main.getConfig().getBoolean("show.tip", true)) {
+                        player.sendTip(replaceTimeValue(main.getLanguage().getString("restart-message-tip")));
+                    }
+                }
+            }
+            if (restartReminderTime <= 0) {
+                runCommand();
+                if (main.getProxy().getPlayers().size() >= 1 && main.getConfig().getBoolean("kick_player", true)) {
                     for (ProxiedPlayer player: main.getProxy().getPlayers().values()) {
-                        player.sendMessage(main.getLanguage().getString("broadcast-restart-reminderTime").replace("%1%", getRestartTime()));
+                        player.disconnect(new TextContainer(main.getLanguage().getString("kickPlayer-message")));
                     }
                 }
-                if (main.getProxy().getPlayers().size() >= 1 && restartReminderTime <= BaseUtils.getRestartTipTime()) {
-                    for (ProxiedPlayer player: main.getProxy().getPlayers().values()) {
-                        if (main.getConfig().getBoolean("show.title", true)) {
-                            player.sendTitle(replaceTimeValue(main.getLanguage().getString("restart-message-title")), replaceTimeValue(main.getLanguage().getString("restart-message-subtitle")),
-                            0, 60, 30);
-                        }
-                        if (main.getConfig().getBoolean("show.tip", true)) {
-                            player.sendTip(replaceTimeValue(main.getLanguage().getString("restart-message-tip")));
-                        }
-                    }
-                }
-                if (restartReminderTime <= 0) {
-                    runCommand();
-                    if (main.getProxy().getPlayers().size() >= 1 && main.getConfig().getBoolean("kick_player", true)) {
-                        for (ProxiedPlayer player: main.getProxy().getPlayers().values()) {
-                            player.disconnect(new TextContainer(main.getLanguage().getString("kickPlayer-message")));
-                        }
-                    }
-                    main.getProxy().shutdown();
-                }
-                restartReminderTime--;
-            }else if (main.getProxy().getPlayers().size() == 0) {
                 main.getProxy().shutdown();
             }
-        }else {
-            TaskUtils.cancelRestartTask();
+            restartReminderTime--;
+        }else if (main.getProxy().getPlayers().size() == 0) {
+            main.getProxy().shutdown();
         }
     }
 
@@ -76,7 +77,7 @@ public class RestartTask extends Task {
      * 注：如果需要通过判断剩余时间执行一下操作之类的用途请使用该方法
      * @return 剩余时间
      */
-    public static int getRestartReminderTime() {
+    public static long getRestartReminderTime() {
         return restartReminderTime;
     }
 
@@ -85,18 +86,20 @@ public class RestartTask extends Task {
      * @return 剩余时间
      */
     public static StringBuilder getRestartTime() {
-        int time = getRestartReminderTime();
-        int hours = time / 3600;
-        int minutes = (time % 3600) / 60;
-        int seconds = time % 60;
+        long time = getRestartReminderTime();
+        long hours = time / 3600;
+        long minutes = (time % 3600) / 60;
+        long seconds = time % 60;
         StringBuilder timeTxt = new StringBuilder();
         if (hours > 0) {
             timeTxt.append(hours).append(main.getLanguage().getString("time-unit-hour"));
         }
-        if(minutes > 0) {
+        if(hours> 0 || minutes > 0) {
             timeTxt.append(minutes).append(main.getLanguage().getString("time-unit-minutes"));
         }
-        timeTxt.append(seconds).append(main.getLanguage().getString("time-unit-seconds"));
+        if (seconds > 0) {
+            timeTxt.append(seconds).append(main.getLanguage().getString("time-unit-seconds"));
+        }
         return timeTxt;
     }
 

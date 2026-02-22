@@ -45,9 +45,10 @@ public class TaskUtils {
             ZonedDateTime currentTime = ZonedDateTime.now();
             long time = ChronoUnit.SECONDS.between(currentTime, restartTime);
             targetRestartTime = restartTime;
-            runRestartTask(taskType, (int) time, TimeUnit.SECONDS);
+            runRestartTask(taskType, time, TimeUnit.SECONDS);
         }else {
-            main.getLogger().error("§c该方法仅供 AUTO_CRON 的任务类型使用！", new IllegalArgumentException());
+            String msg = String.format("§c该方法仅供 §eAUTO_CRON§c 的任务类型使用，但任务类型为 §e%s§c！", taskType);
+            main.getLogger().error(msg, new IllegalArgumentException());
         }
     }
     /**
@@ -57,6 +58,11 @@ public class TaskUtils {
      * @param timeUnit 时间单位
      */
     public static void runRestartTask(RestartTaskType taskType, int time, TimeUnit timeUnit) {
+        time = TimeUtils.convertTime(time, timeUnit);
+        runRestartTask(taskType, Long.valueOf(time), timeUnit);
+    }
+
+    public static void runRestartTask(RestartTaskType taskType, long time, TimeUnit timeUnit) {
         boolean autoTask = taskType.equals(RestartTaskType.AUTO_CYCLE) || taskType.equals(RestartTaskType.AUTO_CRON);
         if (taskType.equals(RestartTaskType.NO_RESTART_TASK)) {
             main.getLogger().error("§c重启任务类型不能为：§eNO_RESTART_TASK§c，该类型是没有在没有运行重启任务时使用的！", new IllegalArgumentException());
