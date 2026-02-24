@@ -12,6 +12,13 @@ restart_time:
   # 格式：时&分 或 时&分&星期 星期范围（1-7）
   cron_time:
     - "3&30"
+  # 校准时间 （在使用 cron_time 配置的时间方可使用）
+  # 定期校准时间以防不在指定时间进行重启
+  calibration_time:
+    ## 是否启用
+    enable: true
+    ## 校准周期 （单位：分钟）
+    cycle: 30
 # 重启前提示时间(单位：秒)
 restart_tip_time: 30
 # 是否在重启前把玩家踢出

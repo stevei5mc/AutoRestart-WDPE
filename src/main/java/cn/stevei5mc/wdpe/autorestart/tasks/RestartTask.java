@@ -9,6 +9,8 @@ import dev.waterdog.waterdogpe.player.ProxiedPlayer;
 import dev.waterdog.waterdogpe.scheduler.Task;
 import dev.waterdog.waterdogpe.utils.types.TextContainer;
 
+import java.time.ZonedDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
 
@@ -17,11 +19,13 @@ public class RestartTask extends Task {
     private static final AutoRestartMain main = AutoRestartMain.getInstance();
     private static long restartReminderTime;
     private long broadcastCycle;
+    private long calibrationCycle;
 
     public RestartTask(long time) {
         super();
         restartReminderTime = time;
         this.broadcastCycle = time;
+        this.calibrationCycle = time;
     }
 
     @Override
@@ -32,12 +36,21 @@ public class RestartTask extends Task {
         }
 
         if (!TaskUtils.getRestartTaskType().equals(RestartTaskType.NO_PLAYER)) {
-            if (main.getConfig().getBoolean("broadcast_message.reminder_time.enable", true) && restartReminderTime == broadcastCycle && broadcastCycle > 0) {
+            if (main.getConfig().getBoolean("broadcast_message.reminder_time.enable", true) && restartReminderTime <= broadcastCycle && broadcastCycle > 0) {
                 broadcastCycle = broadcastCycle - TimeUtils.convertTime(main.getConfig().getInt("broadcast_message.reminder_time.cycle", 30), TimeUnit.MINUTES);
                 for (ProxiedPlayer player: main.getProxy().getPlayers().values()) {
                     player.sendMessage(main.getLanguage().getString("broadcast-restart-reminderTime").replace("%1%", getRestartTime()));
                 }
             }
+
+            if (TaskUtils.getRestartTaskType().equals(RestartTaskType.AUTO_CRON) && main.getConfig().getBoolean("restart_time.calibration_time.enable", true)
+                    && restartReminderTime <= calibrationCycle && calibrationCycle > 0) {
+                calibrationCycle = calibrationCycle - TimeUtils.convertTime(main.getConfig().getInt("restart_time.calibration_time.cycle", 30), TimeUnit.MINUTES);
+                long calibrationTime = ChronoUnit.SECONDS.between(ZonedDateTime.now(), TaskUtils.getTargetRestartTime());
+                main.sendDebugLog("Time error value=" + (calibrationTime - restartReminderTime));
+                restartReminderTime = calibrationTime;
+            }
+
             if (main.getProxy().getPlayers().size() >= 1 && restartReminderTime <= BaseUtils.getRestartTipTime()) {
                 for (ProxiedPlayer player: main.getProxy().getPlayers().values()) {
                     if (main.getConfig().getBoolean("show.title", true)) {
@@ -49,6 +62,7 @@ public class RestartTask extends Task {
                     }
                 }
             }
+
             if (restartReminderTime <= 0) {
                 runCommand();
                 if (main.getProxy().getPlayers().size() >= 1 && main.getConfig().getBoolean("kick_player", true)) {

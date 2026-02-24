@@ -90,6 +90,10 @@ broadcast_message:
 
 </details>
 
+### **效果预览**
+|![1](./docs/image/1.webp)|![2](./docs/image/2.webp)|![3](./docs/image/3.webp)|
+|-|-|-|
+
 ## **使用方法**
 |步骤|说明|
 |:-:|:-|
@@ -141,6 +145,6 @@ ReStart_Time=5s  #等待多少秒后重启要加时间单位
 jvm_ram_xms="512M"  #设置最小内存
 jvm_ram_xmx="1024M"  #设置最大内存
 jar_name="server.jar"  #开服核心的名字记得加.jar后缀名
-server_name="testmc"  #服务名(方便维护用的)，比如说是生存服就将testmc改为生存服
+server_name="2testmc"  #服务名(方便维护用的)，比如说是生存服就将testmc改为生存服
 ```
 </details>

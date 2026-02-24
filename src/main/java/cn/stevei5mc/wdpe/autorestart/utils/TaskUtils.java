@@ -23,6 +23,7 @@ public class TaskUtils {
     @Getter
     private static RestartTaskType restartTaskType = RestartTaskType.NO_RESTART_TASK;
     private static boolean autoTaskState = false;
+    @Getter
     private static ZonedDateTime targetRestartTime = null;
 
 
@@ -58,7 +59,6 @@ public class TaskUtils {
      * @param timeUnit 时间单位
      */
     public static void runRestartTask(RestartTaskType taskType, int time, TimeUnit timeUnit) {
-        time = TimeUtils.convertTime(time, timeUnit);
         runRestartTask(taskType, Long.valueOf(time), timeUnit);
     }
 
@@ -76,10 +76,9 @@ public class TaskUtils {
             if(autoTask) {
                 autoTaskState = true;
             }
-            time = TimeUtils.convertTime(time, timeUnit);
             restartTaskState = RestartTaskState.RUNNING;
             restartTaskType = taskType;
-            restartTask = main.getProxy().getScheduler().scheduleRepeating(new RestartTask(time), taskType.getTaskTick(), true);
+            restartTask = main.getProxy().getScheduler().scheduleRepeating(new RestartTask(TimeUtils.convertTime(time, timeUnit)), taskType.getTaskTick(), true);
             if (taskType.equals(RestartTaskType.AUTO_CRON)) {
                 main.getLogger().info(main.getLanguage().getString("restart-taskState-restartCron").replace("%1%", targetRestartTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"))));
             }else {

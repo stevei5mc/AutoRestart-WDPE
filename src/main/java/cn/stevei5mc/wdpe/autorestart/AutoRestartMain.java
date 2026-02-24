@@ -26,6 +26,7 @@ public class AutoRestartMain extends Plugin {
     public void onEnable() {
         instance = this;
         saveConfig();
+        updateConfig();
         this.getProxy().getCommandMap().registerCommand(new MainCmd());
         if (config.getBoolean("restart_time.time_mode", true)) {
             TaskUtils.runRestartTask(RestartTaskType.AUTO_CRON, TimeUtils.getRestartCronTime());
@@ -59,5 +60,13 @@ public class AutoRestartMain extends Plugin {
         if (config.getBoolean("debug", false)) {
             this.getLogger().debug(message);
         }
+    }
+
+    public void updateConfig() {
+        if (!config.exists("restart_time.calibration_time")) {
+            config.setBoolean("restart_time.calibration_time.enable", true);
+            config.setInt("restart_time.calibration_time.cycle", 30);
+        }
+        config.save();
     }
 }
