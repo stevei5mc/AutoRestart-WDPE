@@ -113,11 +113,17 @@ jobs:
       with:
         name: ${{ needs.build.outputs.artifactName }}
         path: staging
+    - name: 列出需要发布的文件
+      run: ls -lah ./staging
+    - name: 整理更新日志
+      run: |
+        sed -n "/## \*\*注意事项：\*\*/,/## /p" docs/changelogs.md | sed '$d' >> ./release_${{ needs.build.outputs.version }}_log.md
+        sed -n "/## \*\*${{ needs.build.outputs.version }}\*\*/,/## /p" docs/changelogs.md | sed '$d' >> ./release_${{ needs.build.outputs.version }}_log.md
     - name: 发布新版本
-      uses: ncipollo/release-action@v1.14.0
+      uses: ncipollo/release-action@v1
       with:
         tag: ${{ needs.build.outputs.version }}
         name: Release ${{ needs.build.outputs.version }}
         token: ${{ github.token }}
-        body: Release ${{ needs.build.outputs.version }}
+        bodyFile: ./release_${{ needs.build.outputs.version }}_log.md
         artifacts: ./staging/*.*

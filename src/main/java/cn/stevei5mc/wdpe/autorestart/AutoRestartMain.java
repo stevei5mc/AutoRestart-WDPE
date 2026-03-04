@@ -62,11 +62,15 @@ public class AutoRestartMain extends Plugin {
         }
     }
 
-    public void updateConfig() {
-        if (!config.exists("restart_time.calibration_time")) {
-            config.setBoolean("restart_time.calibration_time.enable", true);
-            config.setInt("restart_time.calibration_time.cycle", 30);
+    private void updateConfig() {
+        int latestVersion = 2;
+        if (config.getInt("version", 0) < latestVersion) {
+            config.setInt("version", latestVersion);
+            if (!config.exists("restart_time.calibration_time")) {
+                config.setBoolean("restart_time.calibration_time.enable", true);
+                config.setInt("restart_time.calibration_time.cycle", 30);
+            }
+            config.save();
         }
-        config.save();
     }
 }

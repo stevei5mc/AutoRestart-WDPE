@@ -1,5 +1,5 @@
 # 配置文件版本（勿动!!!）
-version: 1
+version: 2
 # 重启时间
 restart_time:
   # 时间模式
