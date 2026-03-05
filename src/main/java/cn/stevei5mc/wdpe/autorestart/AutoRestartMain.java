@@ -2,11 +2,10 @@ package cn.stevei5mc.wdpe.autorestart;
 
 import cn.stevei5mc.wdpe.autorestart.commands.MainCmd;
 import cn.stevei5mc.wdpe.autorestart.utils.BaseUtils;
+import cn.stevei5mc.wdpe.autorestart.utils.TaskUtils;
 import cn.stevei5mc.wdpe.autorestart.utils.TimeUtils;
 import cn.stevei5mc.wdpe.autorestart.utils.restart.RestartTaskType;
-import cn.stevei5mc.wdpe.autorestart.utils.TaskUtils;
 import dev.waterdog.waterdogpe.plugin.Plugin;
-import dev.waterdog.waterdogpe.utils.config.Configuration;
 import dev.waterdog.waterdogpe.utils.config.YamlConfig;
 import lombok.Getter;
 
@@ -17,9 +16,9 @@ public class AutoRestartMain extends Plugin {
     @Getter
     private static AutoRestartMain instance;
     @Getter
-    private Configuration config;
+    private YamlConfig config;
     @Getter
-    private Configuration language;
+    private YamlConfig language;
 
 
     @Override
