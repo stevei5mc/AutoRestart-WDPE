@@ -117,8 +117,10 @@ jobs:
       run: ls -lah ./staging
     - name: 整理更新日志
       run: |
+        echo "# **${{ needs.build.outputs.version }}**" >> ./release_${{ needs.build.outputs.version }}_log.md
         sed -n "/## \*\*注意事项：\*\*/,/## /p" docs/changelogs.md | sed '$d' >> ./release_${{ needs.build.outputs.version }}_log.md
         sed -n "/## \*\*${{ needs.build.outputs.version }}\*\*/,/## /p" docs/changelogs.md | sed '$d' >> ./release_${{ needs.build.outputs.version }}_log.md
+        sed -i "s|\*\*${{ needs.build.outputs.version }}\*\*|\*\*更新内容\*\*|g" ./release_${{ needs.build.outputs.version }}_log.md
     - name: 发布新版本
       uses: ncipollo/release-action@v1
       with:
